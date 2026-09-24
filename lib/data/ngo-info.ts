@@ -1,0 +1,87 @@
+import { NGOMetadata } from "@/types/ngo";
+
+export const NGO_INFO: NGOMetadata = {
+  name: "Jeevan Chetna Foundation",
+  shortName: "JCF",
+  tagline: "Building Stronger Communities Together",
+  portalSubtitle: "Digital Community & Activity Portal – Social Internship Framework Solution",
+  officialWebsite: "https://www.jeevanchetnafoundation.org/",
+  legalStatus: "Section 8 Registered Non-Profit Organization",
+  certification: "ISO 9001:2015 Certified",
+  registrationState: "Uttarakhand, India",
+  serviceDuration: "8+ Years of Service",
+  officeAddress: {
+    street: "Gadhi Aashram Road",
+    locality: "Ramari Choti",
+    city: "Haldwani",
+    district: "Nainital",
+    state: "Uttarakhand",
+    country: "India",
+  },
+  metrics: {
+    livesImpacted: "15,000+",
+    villagesServed: "42+",
+    activeVolunteers: "200+",
+    yearsOfService: "8+ Years",
+  },
+  coreSectors: [
+    {
+      id: "education",
+      title: "Education",
+      description: "Supporting foundational learning, educational awareness, book distribution, and student mentoring in rural and semi-urban clusters.",
+      icon: "GraduationCap",
+      focus: "Academic enrichment and child education advocacy",
+    },
+    {
+      id: "computer-education",
+      title: "Computer Education",
+      description: "Delivering basic and applied digital literacy, computer operation workshops, and technology access to bridge the digital divide.",
+      icon: "Laptop",
+      focus: "Digital literacy under 'Seeds of Digital Confidence'",
+    },
+    {
+      id: "plantation-drives",
+      title: "Plantation Drives",
+      description: "Mass sapling planting, urban afforestation, biodiversity awareness, and ecological preservation across Haldwani and Nainital district.",
+      icon: "Trees",
+      focus: "Environmental stewardship under 'Green Haldwani'",
+    },
+    {
+      id: "hunger-relief",
+      title: "Hunger Relief",
+      description: "Community nutrition distribution, essential food drives, and nutritional awareness programs for vulnerable families.",
+      icon: "Utensils",
+      focus: "Food security and grassroots nutritional support",
+    },
+    {
+      id: "women-empowerment",
+      title: "Women Empowerment",
+      description: "Skill enhancement workshops, awareness on social rights, and promoting self-reliance for local women groups.",
+      icon: "HeartHandshake",
+      focus: "Self-reliance and socio-economic awareness",
+    },
+    {
+      id: "community-service",
+      title: "Community Outreach",
+      description: "Direct community interactions, public hygiene campaigns, and citizen welfare support in regional villages.",
+      icon: "Users",
+      focus: "Village engagement and civic awareness",
+    },
+  ],
+  flagshipPrograms: [
+    {
+      title: "Seeds of Digital Confidence",
+      tag: "Technology & Digital Literacy",
+      focus: "Computer Education & Basic IT Skills",
+      description: "An intensive grassroots digital empowerment initiative equipping students and rural youth in Haldwani and Nainital with hands-on computer training, digital safety awareness, and essential online skills.",
+      outreach: "Active across village learning centers in Nainital district",
+    },
+    {
+      title: "Green Haldwani",
+      tag: "Environmental Stewardship",
+      focus: "Afforestation & Climate Awareness",
+      description: "A comprehensive environmental campaign mobilizing youth, volunteers, and local institutions to plant native saplings, nurture urban green corridors, and conduct door-to-door waste segregation awareness.",
+      outreach: "42+ Villages and urban wards in Haldwani region",
+    },
+  ],
+};

@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("ADMIN") // "ADMIN" | "EDITOR"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+model Activity {
+  id                 String   @id @default(cuid())
+  title              String
+  category           String
+  date               String
+  location           String
+  villageOrArea      String
+  summary            String   @db.Text
+  description        String   @db.Text
+  objectives         Json     @default("[]")
+  scope              String   @default("")
+  programAffiliation String?
+  status             String   @default("Completed") // "Completed" | "Ongoing" | "Scheduled"
+  keyOutcomes        Json     @default("[]")
+  imageUrl           String
+  galleryImages      Json     @default("[]")
+  isFeatured         Boolean  @default(false)
+  isDemo             Boolean  @default(true)
+  sourceType         String   @default("PROTOTYPE_DEMO") // "PROTOTYPE_DEMO" | "OFFICIAL_PUBLIC"
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("activities")
+}
+
+model Event {
+  id                String              @id @default(cuid())
+  title             String
+  category          String
+  date              String
+  time              String
+  location          String
+  venue             String
+  description       String              @db.Text
+  focusArea         String
+  status            String              @default("Upcoming") // "Upcoming" | "Completed" | "Registration Open"
+  programTag        String
+  capacity          String?
+  imageUrl          String
+  coordinationNotes String              @db.Text
+  isDemo            Boolean             @default(true)
+  sourceType        String              @default("PROTOTYPE_DEMO")
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  registrations     EventRegistration[]
+
+  @@map("events")
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  name      String
+  email     String
+  phone     String
+  role      String   @default("Volunteer Participant")
+  notes     String?  @db.Text
+  status    String   @default("Confirmed")
+  createdAt DateTime @default(now())
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@map("event_registrations")
+}
+
+model Volunteer {
+  id                String   @id @default(cuid())
+  fullName          String
+  email             String
+  phone             String
+  areaOfInterest    String
+  skills            Json     @default("[]")
+  availability      String
+  preferredLocation String
+  status            String   @default("Pending Review") // "Pending Review" | "Verified" | "Assigned"
+  joinedAt          DateTime @default(now())
+  isDemo            Boolean  @default(true)
+  sourceType        String   @default("PROTOTYPE_DEMO")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("volunteers")
+}
+
+model VolunteerRole {
+  id                      String   @id @default(cuid())
+  roleTitle               String
+  domain                  String
+  focusArea               String
+  typicalResponsibilities Json     @default("[]")
+  recommendedSkills       Json     @default("[]")
+  locationCoverage        String
+  activeInitiatives       Json     @default("[]")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("volunteer_roles")
+}
+
+model DocumentationRecord {
+  id                 String   @id @default(cuid())
+  reportCode         String   @unique
+  title              String
+  type               String
+  associatedActivity String
+  date               String
+  authorOrIntern     String
+  location           String
+  summary            String   @db.Text
+  status             String   @default("Verified") // "Verified" | "Archived" | "Under Review"
+  keyObservations    Json     @default("[]")
+  fileFormat         String   @default("PDF Document")
+  sizeEstimate       String   @default("1.2 MB")
+  fileUrl            String?
+  isDemo             Boolean  @default(true)
+  sourceType         String   @default("PROTOTYPE_DEMO")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("documentation_records")
+}
+
+model AttendanceRecord {
+  id            String   @id @default(cuid())
+  volunteerName String
+  activityTitle String
+  date          String
+  status        String   @default("Present")
+  checkInTime   String?
+  checkOutTime  String?
+  isDemo        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("attendance_records")
+}
+
+model GalleryItem {
+  id         String   @id @default(cuid())
+  title      String
+  category   String
+  location   String
+  date       String
+  imageUrl   String
+  caption    String   @db.Text
+  programTag String
+  isDemo     Boolean  @default(true)
+  sourceType String   @default("PROTOTYPE_DEMO")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("gallery_items")
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("NEW") // "NEW" | "IN_PROGRESS" | "RESOLVED"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contact_submissions")
+}
