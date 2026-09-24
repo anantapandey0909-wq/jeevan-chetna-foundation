@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
   FileText, 
   Search, 
@@ -14,12 +14,15 @@ import {
   Sparkles,
   X,
   FileCheck,
-  Info
+  Info,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { REPORTS_DATA } from '@/lib/data/reports';
 import { DocumentationRecord, ReportType } from '@/types/report';
 import { formatDate } from '@/lib/utils';
 import { ReportLogModal } from '@/components/forms/ReportLogModal';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapReport, RawDocumentationRecord } from '@/lib/api-adapters';
 
 const REPORT_TYPES: Array<'All' | ReportType> = [
   'All',
@@ -32,12 +35,31 @@ const REPORT_TYPES: Array<'All' | ReportType> = [
 ];
 
 export default function ReportsPage() {
-  const [reportsList, setReportsList] = useState<DocumentationRecord[]>(REPORTS_DATA);
+  const [reportsList, setReportsList] = useState<DocumentationRecord[]>([]);
   const [selectedType, setSelectedType] = useState<'All' | ReportType>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState<DocumentationRecord | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadReports = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const json = await apiGet<{ success: true; count: number; data: RawDocumentationRecord[] }>('/api/reports');
+      setReportsList(json.data.map(mapReport));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Unable to load reports. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadReports();
+  }, [loadReports]);
 
   const filteredReports = useMemo(() => {
     return reportsList.filter((rep) => {
@@ -148,6 +170,55 @@ export default function ReportsPage() {
           </div>
 
           <div className="overflow-x-auto">
+            {isLoading ? (
+              <div className="p-12 text-center space-y-3">
+                <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+                <p className="text-xs text-slate-500">Loading documentation records…</p>
+              </div>
+            ) : error ? (
+              <div className="p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+                  <AlertTriangle className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load reports</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+                <button
+                  onClick={loadReports}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : reportsList.length === 0 ? (
+              <div className="p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">No documentation records yet</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  No reports have been logged in the database yet.
+                </p>
+              </div>
+            ) : filteredReports.length === 0 ? (
+              <div className="p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+                  <Filter className="w-6 h-6" />
+                </div>
+                <h3 className="text-base font-bold text-slate-800">No reports found</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  No documentation records match your current search or type filter.
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedType('All');
+                  }}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
                 <tr>
@@ -217,6 +288,7 @@ export default function ReportsPage() {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { 
@@ -14,11 +14,15 @@ import {
   HeartHandshake, 
   FileText,
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { ACTIVITIES_DATA } from '@/lib/data/activities';
+import { Activity } from '@/types/activity';
 import { formatDate } from '@/lib/utils';
 import { NGO_INFO } from '@/lib/data/ngo-info';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapActivity, RawActivity } from '@/lib/api-adapters';
 
 export default function ActivityDetailPage({
   params,
@@ -26,13 +30,80 @@ export default function ActivityDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
-  const activity = ACTIVITIES_DATA.find((a) => a.id === resolvedParams.id);
+  const [activity, setActivity] = useState<Activity | null>(null);
+  const [relatedActivities, setRelatedActivities] = useState<Activity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notFoundFlag, setNotFoundFlag] = useState(false);
 
-  if (!activity) {
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setNotFoundFlag(false);
+    try {
+      const detail = await apiGet<{ success: true; data: RawActivity }>(
+        `/api/activities/${resolvedParams.id}`
+      );
+      const current = mapActivity(detail.data);
+      setActivity(current);
+
+      const all = await apiGet<{ success: true; count: number; data: RawActivity[] }>('/api/activities');
+      setRelatedActivities(
+        all.data.map(mapActivity).filter((a) => a.id !== current.id).slice(0, 2)
+      );
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        setNotFoundFlag(true);
+      } else {
+        setError(err instanceof ApiError ? err.message : 'Unable to load this activity. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (notFoundFlag) {
     notFound();
   }
 
-  const relatedActivities = ACTIVITIES_DATA.filter((a) => a.id !== activity.id).slice(0, 2);
+  if (isLoading) {
+    return (
+      <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl border border-slate-200 p-16 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading activity details…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !activity) {
+    return (
+      <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-2xl border border-red-200 p-16 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load this activity</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={load}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">

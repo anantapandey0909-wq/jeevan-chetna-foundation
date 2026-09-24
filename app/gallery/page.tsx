@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Image as ImageIcon, 
   Filter, 
@@ -8,11 +8,14 @@ import {
   Calendar, 
   Maximize2,
   Sparkles,
-  Tag
+  Tag,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { GALLERY_DATA } from '@/lib/data/gallery';
 import { GalleryItem } from '@/types/gallery';
 import { GalleryLightbox } from '@/components/gallery/GalleryLightbox';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapGalleryItem, RawGalleryItem } from '@/lib/api-adapters';
 
 const GALLERY_CATEGORIES = [
   'All',
@@ -25,8 +28,28 @@ const GALLERY_CATEGORIES = [
 export default function GalleryPage() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [lightboxItem, setLightboxItem] = useState<GalleryItem | null>(null);
+  const [galleryList, setGalleryList] = useState<GalleryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredGallery = GALLERY_DATA.filter((item) => {
+  const loadGallery = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const json = await apiGet<{ success: true; count: number; data: RawGalleryItem[] }>('/api/gallery');
+      setGalleryList(json.data.map(mapGalleryItem));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Unable to load the gallery. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadGallery();
+  }, [loadGallery]);
+
+  const filteredGallery = galleryList.filter((item) => {
     if (selectedCategory === 'All') return true;
     return item.category === selectedCategory;
   });
@@ -77,6 +100,36 @@ export default function GalleryPage() {
         </div>
 
         {/* Masonry / Grid */}
+        {isLoading ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading photo records…</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-2xl border border-red-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load the gallery</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={loadGallery}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredGallery.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <ImageIcon className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">No photos found</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              No photo records match this category yet.
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredGallery.map((item) => (
             <div
@@ -138,6 +191,7 @@ export default function GalleryPage() {
             </div>
           ))}
         </div>
+        )}
       </div>
 
       <GalleryLightbox

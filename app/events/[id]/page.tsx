@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useState } from 'react';
+import React, { use, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { 
@@ -13,12 +13,16 @@ import {
   HeartHandshake, 
   Share2, 
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { EVENTS_DATA } from '@/lib/data/events';
+import { CommunityEvent } from '@/types/event';
 import { formatDate } from '@/lib/utils';
 import { EventRSVPModal } from '@/components/forms/EventRSVPModal';
 import { NGO_INFO } from '@/lib/data/ngo-info';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapEvent, RawEvent } from '@/lib/api-adapters';
 
 export default function EventDetailPage({
   params,
@@ -26,11 +30,73 @@ export default function EventDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
-  const event = EVENTS_DATA.find((e) => e.id === resolvedParams.id);
+  const [event, setEvent] = useState<CommunityEvent | null>(null);
   const [rsvpOpen, setRsvpOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [notFoundFlag, setNotFoundFlag] = useState(false);
 
-  if (!event) {
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    setNotFoundFlag(false);
+    try {
+      const detail = await apiGet<{ success: true; data: RawEvent }>(
+        `/api/events/${resolvedParams.id}`
+      );
+      setEvent(mapEvent(detail.data));
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 404) {
+        setNotFoundFlag(true);
+      } else {
+        setError(err instanceof ApiError ? err.message : 'Unable to load this event. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [resolvedParams.id]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (notFoundFlag) {
     notFound();
+  }
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl border border-slate-200 p-16 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading event details…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-3xl border border-red-200 p-16 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load this event</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={load}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

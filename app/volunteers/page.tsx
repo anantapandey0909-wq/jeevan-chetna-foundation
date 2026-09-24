@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Users, 
@@ -16,21 +16,49 @@ import {
   MapPin, 
   Briefcase,
   ArrowRight,
-  UserCheck
+  UserCheck,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import { NGO_INFO } from '@/lib/data/ngo-info';
-import { VOLUNTEER_ROLES } from '@/lib/data/volunteers';
 import { VolunteerRole } from '@/types/volunteer';
 import { VolunteerRegistrationModal } from '@/components/forms/VolunteerRegistrationModal';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapVolunteerRole, RawVolunteerRole } from '@/lib/api-adapters';
 
 export default function VolunteersPage() {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeDomainFilter, setActiveDomainFilter] = useState<string>('All');
+  const [rolesList, setRolesList] = useState<VolunteerRole[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadRoles = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const json = await apiGet<{
+        success: true;
+        roles: RawVolunteerRole[];
+        applications: unknown[];
+        totalRegistered: number;
+      }>('/api/volunteers');
+      setRolesList(json.roles.map(mapVolunteerRole));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Unable to load volunteer roles. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadRoles();
+  }, [loadRoles]);
 
   const domains = ['All', 'Plantation & Ecology', 'Digital & Computer Training', 'Field Documentation & Reporting', 'Teaching & Remedial Support', 'Community Survey & Mobilization'];
 
-  const filteredRoles = VOLUNTEER_ROLES.filter((role) => {
+  const filteredRoles = rolesList.filter((role) => {
     if (activeDomainFilter === 'All') return true;
     return role.domain === activeDomainFilter;
   });
@@ -135,6 +163,36 @@ export default function VolunteersPage() {
         </div>
 
         {/* Volunteer Roles Grid */}
+        {isLoading ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading volunteer roles…</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-3xl border border-red-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load volunteer roles</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={loadRoles}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredRoles.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <Briefcase className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">No roles in this domain yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Try selecting a different functional domain above.
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredRoles.map((role) => (
             <div
@@ -209,6 +267,7 @@ export default function VolunteersPage() {
             </div>
           ))}
         </div>
+        )}
 
         {/* Data Policy Note on Volunteer Personas */}
         <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-xs text-slate-500 space-y-1">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Search, 
@@ -12,12 +12,15 @@ import {
   Sparkles, 
   Plus, 
   X,
-  CheckCircle2
+  CheckCircle2,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { ACTIVITIES_DATA } from '@/lib/data/activities';
-import { ActivityCategory } from '@/types/activity';
+import { Activity, ActivityCategory } from '@/types/activity';
 import { formatDate } from '@/lib/utils';
 import { ActivityCreateModal } from '@/components/forms/ActivityCreateModal';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapActivity, RawActivity } from '@/lib/api-adapters';
 
 const CATEGORIES: Array<'All' | ActivityCategory> = [
   'All',
@@ -30,10 +33,29 @@ const CATEGORIES: Array<'All' | ActivityCategory> = [
 ];
 
 export default function ActivitiesPage() {
-  const [activitiesList, setActivitiesList] = useState(ACTIVITIES_DATA);
+  const [activitiesList, setActivitiesList] = useState<Activity[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<'All' | ActivityCategory>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadActivities = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const json = await apiGet<{ success: true; count: number; data: RawActivity[] }>('/api/activities');
+      setActivitiesList(json.data.map(mapActivity));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Unable to load activities. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadActivities();
+  }, [loadActivities]);
 
   const filteredActivities = useMemo(() => {
     return activitiesList.filter((act) => {
@@ -135,7 +157,36 @@ export default function ActivitiesPage() {
         </div>
 
         {/* Activities Grid */}
-        {filteredActivities.length === 0 ? (
+        {isLoading ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading activity records…</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-2xl border border-red-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load activities</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={loadActivities}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : activitiesList.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <Trees className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">No activity records yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              No activities have been logged in the database yet.
+            </p>
+          </div>
+        ) : filteredActivities.length === 0 ? (
           <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
             <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
               <Filter className="w-6 h-6" />

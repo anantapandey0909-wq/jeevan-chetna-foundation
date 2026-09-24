@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Calendar, 
@@ -10,18 +10,41 @@ import {
   Sparkles, 
   CheckCircle2, 
   Users,
-  Tag 
+  Tag,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
-import { EVENTS_DATA } from '@/lib/data/events';
 import { CommunityEvent } from '@/types/event';
 import { formatDate } from '@/lib/utils';
 import { EventRSVPModal } from '@/components/forms/EventRSVPModal';
+import { apiGet, ApiError } from '@/lib/api-client';
+import { mapEvent, RawEvent } from '@/lib/api-adapters';
 
 export default function EventsPage() {
   const [activeTab, setActiveTab] = useState<'Upcoming' | 'Completed'>('Upcoming');
   const [selectedEventForRSVP, setSelectedEventForRSVP] = useState<CommunityEvent | null>(null);
+  const [eventsList, setEventsList] = useState<CommunityEvent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredEvents = EVENTS_DATA.filter((e) => {
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const json = await apiGet<{ success: true; count: number; data: RawEvent[] }>('/api/events');
+      setEventsList(json.data.map(mapEvent));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Unable to load events. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  const filteredEvents = eventsList.filter((e) => {
     if (activeTab === 'Upcoming') return e.status === 'Upcoming' || e.status === 'Registration Open';
     return e.status === 'Completed';
   });
@@ -70,6 +93,40 @@ export default function EventsPage() {
         </div>
 
         {/* Events Grid */}
+        {isLoading ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
+            <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
+            <p className="text-xs text-slate-500">Loading events…</p>
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-3xl border border-red-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load events</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
+            <button
+              onClick={loadEvents}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto">
+              <Calendar className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">
+              {activeTab === 'Upcoming' ? 'No upcoming events scheduled' : 'No completed drives yet'}
+            </h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              {activeTab === 'Upcoming'
+                ? 'Check back soon, or view completed drives instead.'
+                : 'Events will appear here once they are marked completed.'}
+            </p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredEvents.map((evt) => {
             const eventDate = new Date(evt.date);
@@ -158,6 +215,7 @@ export default function EventsPage() {
             );
           })}
         </div>
+        )}
       </div>
 
       <EventRSVPModal
