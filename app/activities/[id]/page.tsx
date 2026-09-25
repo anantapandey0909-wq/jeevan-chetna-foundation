@@ -23,6 +23,7 @@ import { formatDate } from '@/lib/utils';
 import { NGO_INFO } from '@/lib/data/ngo-info';
 import { apiGet, ApiError } from '@/lib/api-client';
 import { mapActivity, RawActivity } from '@/lib/api-adapters';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 export default function ActivityDetailPage({
   params,
@@ -91,7 +92,7 @@ export default function ActivityDetailPage({
             <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load this activity</h3>
+            <h3 className="text-base font-bold text-slate-800">Couldn't load this activity</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
             <button
               onClick={load}
@@ -108,7 +109,6 @@ export default function ActivityDetailPage({
   return (
     <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Breadcrumb / Back button */}
         <div className="flex items-center justify-between">
           <Link
             href="/activities"
@@ -123,7 +123,6 @@ export default function ActivityDetailPage({
           </span>
         </div>
 
-        {/* Hero Card */}
         <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-subtle">
           <div className="relative h-64 sm:h-96 w-full bg-slate-900">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -143,6 +142,7 @@ export default function ActivityDetailPage({
                     {activity.programAffiliation}
                   </span>
                 )}
+                {activity.isDemo && <DemoBadge className="bg-white/90 text-slate-700 border-slate-200/80" />}
               </div>
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight">
                 {activity.title}
@@ -150,7 +150,6 @@ export default function ActivityDetailPage({
             </div>
           </div>
 
-          {/* Quick Details Bar */}
           <div className="bg-slate-50 border-b border-slate-200 p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="flex items-center gap-2.5">
               <Calendar className="w-4 h-4 text-forest-700 shrink-0" />
@@ -177,9 +176,7 @@ export default function ActivityDetailPage({
             </div>
           </div>
 
-          {/* Main Body */}
           <div className="p-6 sm:p-8 space-y-8">
-            {/* Overview */}
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-forest-700" />
@@ -190,7 +187,6 @@ export default function ActivityDetailPage({
               </p>
             </div>
 
-            {/* Key Objectives */}
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Target className="w-4 h-4 text-forest-700" />
@@ -209,7 +205,6 @@ export default function ActivityDetailPage({
               </div>
             </div>
 
-            {/* Documented Outcomes if available */}
             {activity.keyOutcomes && activity.keyOutcomes.length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -230,7 +225,6 @@ export default function ActivityDetailPage({
               </div>
             )}
 
-            {/* Photo Highlights */}
             {activity.galleryImages && activity.galleryImages.length > 0 && (
               <div className="space-y-3">
                 <h2 className="text-lg font-bold text-slate-900">
@@ -251,7 +245,6 @@ export default function ActivityDetailPage({
               </div>
             )}
 
-            {/* Report Rationale link */}
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-forest-700" />
@@ -269,7 +262,6 @@ export default function ActivityDetailPage({
           </div>
         </div>
 
-        {/* Related Activities Section */}
         {relatedActivities.length > 0 && (
           <div className="space-y-4 pt-4">
             <h3 className="text-xl font-bold text-slate-900">Other Documented Activities</h3>
