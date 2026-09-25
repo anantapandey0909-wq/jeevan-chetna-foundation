@@ -23,6 +23,7 @@ import { EventRSVPModal } from '@/components/forms/EventRSVPModal';
 import { NGO_INFO } from '@/lib/data/ngo-info';
 import { apiGet, ApiError } from '@/lib/api-client';
 import { mapEvent, RawEvent } from '@/lib/api-adapters';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 export default function EventDetailPage({
   params,
@@ -85,7 +86,7 @@ export default function EventDetailPage({
             <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load this event</h3>
+            <h3 className="text-base font-bold text-slate-800">Couldn't load this event</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
             <button
               onClick={load}
@@ -102,7 +103,6 @@ export default function EventDetailPage({
   return (
     <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Navigation */}
         <div className="flex items-center justify-between">
           <Link
             href="/events"
@@ -117,7 +117,6 @@ export default function EventDetailPage({
           </span>
         </div>
 
-        {/* Hero Event Card */}
         <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-subtle">
           <div className="relative h-56 sm:h-80 w-full bg-slate-900">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -128,16 +127,18 @@ export default function EventDetailPage({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white">
-                {event.category}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-600 text-white">
+                  {event.category}
+                </span>
+                {event.isDemo && <DemoBadge className="bg-white/90 text-slate-700 border-slate-200/80" />}
+              </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
                 {event.title}
               </h1>
             </div>
           </div>
 
-          {/* Logistics Grid */}
           <div className="bg-slate-50 border-b border-slate-200 p-6 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div className="flex items-center gap-3">
               <Calendar className="w-5 h-5 text-forest-700 shrink-0" />
@@ -164,7 +165,6 @@ export default function EventDetailPage({
             </div>
           </div>
 
-          {/* Main Body */}
           <div className="p-6 sm:p-8 space-y-6">
             <div className="space-y-3">
               <h2 className="text-lg font-bold text-slate-900">Event Overview & Scope</h2>
@@ -192,7 +192,6 @@ export default function EventDetailPage({
               </div>
             </div>
 
-            {/* Action Bar */}
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
               <span className="text-xs text-slate-500">
                 Organized by <strong>{NGO_INFO.name}</strong> • Haldwani, Uttarakhand
