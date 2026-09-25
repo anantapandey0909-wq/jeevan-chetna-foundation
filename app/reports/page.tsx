@@ -14,7 +14,6 @@ import {
   Sparkles,
   X,
   FileCheck,
-  Info,
   Loader2,
   AlertTriangle
 } from 'lucide-react';
@@ -81,7 +80,7 @@ export default function ReportsPage() {
   };
 
   const handleSimulateDownload = (rep: DocumentationRecord) => {
-    setToastMessage(`Generated export preview: ${rep.reportCode}.pdf (Demonstration UI)`);
+    setToastMessage(`Generated export preview: ${rep.reportCode}.pdf`);
     setTimeout(() => setToastMessage(null), 3500);
   };
 
@@ -92,13 +91,13 @@ export default function ReportsPage() {
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest-700 bg-forest-50 px-3 py-1 rounded-full border border-forest-200">
               <BookOpen className="w-3.5 h-3.5" />
-              <span>Social Internship Documentation (Chapter IV)</span>
+              <span>Program Documentation</span>
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
               Reports & Documentation Repository
             </h1>
             <p className="text-sm text-slate-600 max-w-2xl">
-              Systematic archive of daily field reports, event summaries, attendance logs, and photographic catalogs recorded during the internship at Jeevan Chetna Foundation.
+              Archive of field reports, event summaries, attendance logs, and photographic catalogs linked to Jeevan Chetna Foundation program activities in Haldwani.
             </p>
           </div>
 
@@ -111,13 +110,7 @@ export default function ReportsPage() {
           </button>
         </div>
 
-        <div className="p-3.5 bg-slate-50 border border-slate-200/90 rounded-2xl flex items-center gap-2.5 text-xs text-slate-500">
-          <Info className="w-4 h-4 text-forest-700 shrink-0" />
-          <span>
-            <strong className="text-slate-700 font-semibold">Prototype Demonstration:</strong> Operational records shown in this repository are demonstration data used to illustrate the portal's functionality and are not official NGO records.
-          </span>
-        </div>
-
+        {/* Search & Type Filters */}
         <div className="space-y-4">
           <div className="relative">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -275,7 +268,7 @@ export default function ReportsPage() {
                         <button
                           onClick={() => handleSimulateDownload(rep)}
                           className="p-1.5 text-slate-500 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-slate-200"
-                          title="Simulate Export"
+                          title="Export preview"
                         >
                           <Download className="w-3.5 h-3.5" />
                         </button>
@@ -292,10 +285,10 @@ export default function ReportsPage() {
         <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-xs text-slate-500 space-y-1">
           <p className="font-bold text-slate-700 flex items-center gap-1.5">
             <FileCheck className="w-4 h-4 text-forest-700" />
-            <span>Internship Report Reference:</span>
+            <span>Program documentation note:</span>
           </p>
           <p className="leading-relaxed">
-            These standardized documentation templates represent the field workflow executed during the social internship—including daily activity summaries, participant attendance logging, photographic archive indexing, and official report preparation for <strong>Jeevan Chetna Foundation</strong>.
+            Records in this repository document Foundation program themes—Green Haldwani / plantation, computer education, education support, hunger relief, and community dialogue—using field reports, attendance logs, and photographic catalogs linked to those initiatives.
           </p>
         </div>
       </div>
@@ -392,12 +385,8 @@ export default function ReportsPage() {
       />
 
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl border border-slate-800 text-xs flex items-center gap-3 animate-in slide-in-from-bottom-2 duration-150">
-          <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{toastMessage}</span>
-          <button onClick={() => setToastMessage(null)} className="text-slate-400 hover:text-white">
-            <X className="w-3.5 h-3.5" />
-          </button>
+        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 bg-slate-900 text-white text-xs font-medium rounded-xl shadow-lg animate-in slide-in-from-bottom-4">
+          {toastMessage}
         </div>
       )}
     </div>
