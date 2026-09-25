@@ -33,7 +33,11 @@ async function main() {
   });
   console.log(`✅ Admin user seeded: ${admin.email}`);
 
-  // 2. Seed Activities (Tagged with isDemo: true, sourceType: "PROTOTYPE_DEMO")
+  // 2. Seed Activities
+  // Public initiative content (Green Haldwani, Education, Digital Confidence, Hunger Relief, Community)
+  // uses genuine Foundation / owner imagery. isDemo=false so cards are not labeled "Demo".
+  // Portal-level PrototypeBanner still discloses the overall prototype nature of this site.
+  // sourceType remains PROTOTYPE_DEMO: these are not claimed as live NGO operational exports.
   for (const act of ACTIVITIES_DATA) {
     await prisma.activity.upsert({
       where: { id: act.id },
@@ -53,7 +57,7 @@ async function main() {
         imageUrl: act.imageUrl,
         galleryImages: act.galleryImages || [],
         isFeatured: act.isFeatured || false,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
       create: {
@@ -73,14 +77,14 @@ async function main() {
         imageUrl: act.imageUrl,
         galleryImages: act.galleryImages || [],
         isFeatured: act.isFeatured || false,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
     });
   }
   console.log(`✅ ${ACTIVITIES_DATA.length} activities migrated.`);
 
-  // 3. Seed Events (Tagged with isDemo: true, sourceType: "PROTOTYPE_DEMO")
+  // 3. Seed Events — KEEP isDemo=true (fabricated dates, capacity, coordination; sample schedule)
   for (const evt of EVENTS_DATA) {
     await prisma.event.upsert({
       where: { id: evt.id },
@@ -150,7 +154,7 @@ async function main() {
   }
   console.log(`✅ ${VOLUNTEER_ROLES.length} volunteer roles migrated.`);
 
-  // 5. Seed Documentation Records (Tagged with isDemo: true, sourceType: "PROTOTYPE_DEMO")
+  // 5. Seed Documentation Records — KEEP isDemo=true (sample internship reports, not official archives)
   for (const rep of REPORTS_DATA) {
     await prisma.documentationRecord.upsert({
       where: { reportCode: rep.reportCode },
@@ -190,7 +194,10 @@ async function main() {
   }
   console.log(`✅ ${REPORTS_DATA.length} documentation records migrated.`);
 
-  // 6. Seed Gallery Items (Tagged with isDemo: true, sourceType: "PROTOTYPE_DEMO")
+  // 6. Seed Gallery Items
+  // Owner-supplied + official Foundation photographs with factual captions.
+  // isDemo=false: photographic records of real Foundation imagery, not sample ops data.
+  // sourceType remains PROTOTYPE_DEMO (portal context); PrototypeBanner still applies site-wide.
   for (const gal of GALLERY_DATA) {
     await prisma.galleryItem.upsert({
       where: { id: gal.id },
@@ -202,7 +209,7 @@ async function main() {
         imageUrl: gal.imageUrl,
         caption: gal.caption,
         programTag: gal.programTag,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
       create: {
@@ -214,7 +221,7 @@ async function main() {
         imageUrl: gal.imageUrl,
         caption: gal.caption,
         programTag: gal.programTag,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
     });
