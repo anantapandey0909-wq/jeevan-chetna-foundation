@@ -30,7 +30,7 @@ export const EVENTS_DATA: CommunityEvent[] = [
     status: "Upcoming",
     programTag: "Seeds of Digital Confidence",
     capacity: "Batch size: 30 students per slot",
-    imageUrl: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/events/digital-confidence-01.jpg",
     coordinationNotes: "Digital instructors and volunteer mentors will conduct one-on-one setup on desktop systems.",
   },
   {
@@ -46,7 +46,7 @@ export const EVENTS_DATA: CommunityEvent[] = [
     status: "Upcoming",
     programTag: "Hunger Relief & Health",
     capacity: "Open to local village families",
-    imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "/images/events/hunger-relief-foundation-01.jpg",
     coordinationNotes: "Distribution logistics handled by verified volunteer teams with digital attendance logging.",
   },
   {
