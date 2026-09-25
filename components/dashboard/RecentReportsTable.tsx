@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FileText, Eye, Download, CheckCircle2, Clock, X, Sparkles } from 'lucide-react';
 import { DocumentationRecord } from '@/types/report';
 import { formatDate } from '@/lib/utils';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 interface RecentReportsTableProps {
   reports: DocumentationRecord[];
@@ -36,9 +37,10 @@ export function RecentReportsTable({ reports }: RecentReportsTableProps) {
             {reports.map((report) => (
               <tr key={report.id} className="hover:bg-slate-50/70 transition-colors">
                 <td className="py-3 px-4">
-                  <div className="font-semibold text-slate-800 flex items-center gap-1.5">
+                  <div className="font-semibold text-slate-800 flex items-center gap-1.5 flex-wrap">
                     <FileText className="w-3.5 h-3.5 text-forest-700 shrink-0" />
                     <span>{report.title}</span>
+                    {report.isDemo && <DemoBadge />}
                   </div>
                   <div className="text-[10px] text-slate-400 font-mono mt-0.5">
                     {report.reportCode} • {report.sizeEstimate}
