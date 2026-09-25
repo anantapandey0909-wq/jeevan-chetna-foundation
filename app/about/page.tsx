@@ -74,13 +74,13 @@ export default function AboutPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/images/foundation/team/kamal-sir.jpg"
-                  alt="Mr. Kamal, Jeevan Chetna Foundation team"
+                  alt="Mr. Kamal, Coordinator at Jeevan Chetna Foundation"
                   className="w-full h-full object-cover object-top"
                 />
               </div>
               <div className="px-4 py-3 border-t border-slate-100">
                 <p className="font-bold text-sm text-slate-900">Mr. Kamal</p>
-                <p className="text-xs text-forest-700 font-medium mt-0.5">Team member</p>
+                <p className="text-xs text-forest-700 font-medium mt-0.5">Coordinator</p>
               </div>
             </div>
           </div>
