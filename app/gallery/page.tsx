@@ -16,6 +16,7 @@ import { GalleryItem } from '@/types/gallery';
 import { GalleryLightbox } from '@/components/gallery/GalleryLightbox';
 import { apiGet, ApiError } from '@/lib/api-client';
 import { mapGalleryItem, RawGalleryItem } from '@/lib/api-adapters';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 const GALLERY_CATEGORIES = [
   'All',
@@ -151,9 +152,12 @@ export default function GalleryPage() {
                       <span>Enlarge Photo</span>
                     </span>
                   </div>
-                  <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/95 backdrop-blur-sm text-forest-900 shadow-xs">
-                    {item.category}
-                  </span>
+                  <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/95 backdrop-blur-sm text-forest-900 shadow-xs">
+                      {item.category}
+                    </span>
+                    {item.isDemo && <DemoBadge className="bg-white/95 backdrop-blur-sm shadow-xs" />}
+                  </div>
                 </div>
 
                 <div className="p-5 space-y-2">
