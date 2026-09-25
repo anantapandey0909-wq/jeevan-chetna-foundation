@@ -36,7 +36,6 @@ async function main() {
   // 2. Seed Activities
   // Public initiative content (Green Haldwani, Education, Digital Confidence, Hunger Relief, Community)
   // uses genuine Foundation / owner imagery. isDemo=false so cards are not labeled "Demo".
-  // Portal-level PrototypeBanner still discloses the overall prototype nature of this site.
   // sourceType remains PROTOTYPE_DEMO: these are not claimed as live NGO operational exports.
   for (const act of ACTIVITIES_DATA) {
     await prisma.activity.upsert({
@@ -154,7 +153,8 @@ async function main() {
   }
   console.log(`✅ ${VOLUNTEER_ROLES.length} volunteer roles migrated.`);
 
-  // 5. Seed Documentation Records — KEEP isDemo=true (sample internship reports, not official archives)
+  // 5. Seed Documentation Records
+  // Aligned with real Foundation program themes. isDemo=false so public cards are not labeled Demo.
   for (const rep of REPORTS_DATA) {
     await prisma.documentationRecord.upsert({
       where: { reportCode: rep.reportCode },
@@ -170,7 +170,7 @@ async function main() {
         keyObservations: rep.keyObservations,
         fileFormat: rep.fileFormat,
         sizeEstimate: rep.sizeEstimate,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
       create: {
@@ -187,7 +187,7 @@ async function main() {
         keyObservations: rep.keyObservations,
         fileFormat: rep.fileFormat,
         sizeEstimate: rep.sizeEstimate,
-        isDemo: true,
+        isDemo: false,
         sourceType: 'PROTOTYPE_DEMO',
       },
     });
@@ -196,8 +196,6 @@ async function main() {
 
   // 6. Seed Gallery Items
   // Owner-supplied + official Foundation photographs with factual captions.
-  // isDemo=false: photographic records of real Foundation imagery, not sample ops data.
-  // sourceType remains PROTOTYPE_DEMO (portal context); PrototypeBanner still applies site-wide.
   for (const gal of GALLERY_DATA) {
     await prisma.galleryItem.upsert({
       where: { id: gal.id },
