@@ -28,4 +28,6 @@ export interface VolunteerApplication {
   preferredLocation: string;
   submittedAt: string;
   status: 'Pending Review' | 'Verified' | 'Assigned';
+  /** True when the record is prototype/demo data (not an official NGO operational record). */
+  isDemo?: boolean;
 }

@@ -15,4 +15,6 @@ export interface CommunityEvent {
   capacity?: string;
   imageUrl: string;
   coordinationNotes: string;
+  /** True when the record is prototype/demo data (not an official NGO operational record). */
+  isDemo?: boolean;
 }

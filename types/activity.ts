@@ -25,4 +25,6 @@ export interface Activity {
   imageUrl: string;
   galleryImages?: string[];
   isFeatured?: boolean;
+  /** True when the record is prototype/demo data (not an official NGO operational record). */
+  isDemo?: boolean;
 }

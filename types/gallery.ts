@@ -7,4 +7,6 @@ export interface GalleryItem {
   imageUrl: string;
   caption: string;
   programTag: string;
+  /** True when the record is prototype/demo data (not an official NGO operational record). */
+  isDemo?: boolean;
 }

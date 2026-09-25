@@ -22,4 +22,6 @@ export interface DocumentationRecord {
   keyObservations: string[];
   fileFormat: string;
   sizeEstimate: string;
+  /** True when the record is prototype/demo data (not an official NGO operational record). */
+  isDemo?: boolean;
 }
