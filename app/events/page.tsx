@@ -19,6 +19,7 @@ import { formatDate } from '@/lib/utils';
 import { EventRSVPModal } from '@/components/forms/EventRSVPModal';
 import { apiGet, ApiError } from '@/lib/api-client';
 import { mapEvent, RawEvent } from '@/lib/api-adapters';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 export default function EventsPage() {
   const [activeTab, setActiveTab] = useState<'Upcoming' | 'Completed'>('Upcoming');
@@ -52,7 +53,6 @@ export default function EventsPage() {
   return (
     <div className="bg-[#fdfcfb] min-h-screen py-10 sm:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-forest-700 bg-forest-50 px-3 py-1 rounded-full border border-forest-200">
@@ -67,7 +67,6 @@ export default function EventsPage() {
             </p>
           </div>
 
-          {/* Upcoming / Past Tabs */}
           <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs self-start md:self-auto">
             <button
               onClick={() => setActiveTab('Upcoming')}
@@ -92,7 +91,6 @@ export default function EventsPage() {
           </div>
         </div>
 
-        {/* Events Grid */}
         {isLoading ? (
           <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center space-y-3">
             <Loader2 className="w-6 h-6 text-forest-700 animate-spin mx-auto" />
@@ -139,7 +137,6 @@ export default function EventsPage() {
                 className="bg-white rounded-3xl border border-slate-200 p-6 shadow-subtle hover:shadow-card transition-all flex flex-col justify-between space-y-6 group"
               >
                 <div className="space-y-4">
-                  {/* Top bar with calendar date box and category badge */}
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-center gap-3">
                       <div className="w-14 h-14 rounded-2xl bg-forest-50 border border-forest-100 text-forest-800 flex flex-col items-center justify-center shrink-0">
@@ -151,9 +148,12 @@ export default function EventsPage() {
                         </span>
                       </div>
                       <div>
-                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          {evt.category}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                            {evt.category}
+                          </span>
+                          {evt.isDemo && <DemoBadge />}
+                        </div>
                         <span className="text-xs text-slate-400 block mt-1">
                           Tag: <strong className="text-slate-600">{evt.programTag}</strong>
                         </span>
