@@ -44,6 +44,48 @@ export default function AboutPage() {
         {/* Sliding team, community & program photographs (real Foundation / owner photos) */}
         <AboutPhotoCarousel />
 
+        {/* Leadership & team photographs (owner-supplied) */}
+        <div className="space-y-5">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Leadership & Team
+            </h2>
+            <p className="text-sm text-slate-500 max-w-xl mx-auto">
+              Photographs of Foundation leadership shared for this portal.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-subtle overflow-hidden">
+              <div className="relative aspect-[4/5] bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/foundation/team/praveen-sir.jpg"
+                  alt="Mr. Parvin Pandey, Co-founder of Jeevan Chetna Foundation"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div className="px-4 py-3 border-t border-slate-100">
+                <p className="font-bold text-sm text-slate-900">Mr. Parvin Pandey</p>
+                <p className="text-xs text-forest-700 font-medium mt-0.5">Co-founder</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-subtle overflow-hidden">
+              <div className="relative aspect-[4/5] bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/foundation/team/kamal-sir.jpg"
+                  alt="Mr. Kamal, Jeevan Chetna Foundation team"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div className="px-4 py-3 border-t border-slate-100">
+                <p className="font-bold text-sm text-slate-900">Mr. Kamal</p>
+                <p className="text-xs text-forest-700 font-medium mt-0.5">Team member</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Official Identity & Legal Standing Card */}
         <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-subtle space-y-6">
           <div className="border-b border-slate-100 pb-4">
