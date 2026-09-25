@@ -21,6 +21,7 @@ import { formatDate } from '@/lib/utils';
 import { ActivityCreateModal } from '@/components/forms/ActivityCreateModal';
 import { apiGet, ApiError } from '@/lib/api-client';
 import { mapActivity, RawActivity } from '@/lib/api-adapters';
+import { DemoBadge } from '@/components/ui/DemoBadge';
 
 const CATEGORIES: Array<'All' | ActivityCategory> = [
   'All',
@@ -167,7 +168,7 @@ export default function ActivitiesPage() {
             <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-800">Couldn&apos;t load activities</h3>
+            <h3 className="text-base font-bold text-slate-800">Couldn't load activities</h3>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">{error}</p>
             <button
               onClick={loadActivities}
@@ -220,10 +221,11 @@ export default function ActivitiesPage() {
                       alt={act.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
                       <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/95 backdrop-blur-sm text-forest-900 shadow-xs">
                         {act.category}
                       </span>
+                      {act.isDemo && <DemoBadge className="bg-white/95 backdrop-blur-sm shadow-xs" />}
                     </div>
                     {act.programAffiliation && (
                       <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded text-[10px] font-semibold bg-forest-950/85 text-emerald-300 backdrop-blur-sm">
