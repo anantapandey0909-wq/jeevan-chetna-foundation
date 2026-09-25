@@ -39,6 +39,7 @@ export interface RawActivity {
   imageUrl: string;
   galleryImages: unknown;
   isFeatured: boolean;
+  isDemo?: boolean;
 }
 
 export function mapActivity(raw: RawActivity): Activity {
@@ -59,6 +60,7 @@ export function mapActivity(raw: RawActivity): Activity {
     imageUrl: raw.imageUrl,
     galleryImages: toStringArray(raw.galleryImages),
     isFeatured: raw.isFeatured,
+    isDemo: raw.isDemo === true,
   };
 }
 
@@ -79,6 +81,7 @@ export interface RawEvent {
   capacity: string | null;
   imageUrl: string;
   coordinationNotes: string;
+  isDemo?: boolean;
 }
 
 export function mapEvent(raw: RawEvent): CommunityEvent {
@@ -97,6 +100,7 @@ export function mapEvent(raw: RawEvent): CommunityEvent {
     capacity: raw.capacity ?? undefined,
     imageUrl: raw.imageUrl,
     coordinationNotes: raw.coordinationNotes,
+    isDemo: raw.isDemo === true,
   };
 }
 
@@ -142,6 +146,7 @@ export interface RawDocumentationRecord {
   keyObservations: unknown;
   fileFormat: string;
   sizeEstimate: string;
+  isDemo?: boolean;
 }
 
 export function mapReport(raw: RawDocumentationRecord): DocumentationRecord {
@@ -159,6 +164,7 @@ export function mapReport(raw: RawDocumentationRecord): DocumentationRecord {
     keyObservations: toStringArray(raw.keyObservations),
     fileFormat: raw.fileFormat,
     sizeEstimate: raw.sizeEstimate,
+    isDemo: raw.isDemo === true,
   };
 }
 
@@ -173,6 +179,7 @@ export interface RawGalleryItem {
   imageUrl: string;
   caption: string;
   programTag: string;
+  isDemo?: boolean;
 }
 
 export function mapGalleryItem(raw: RawGalleryItem): GalleryItem {
@@ -185,5 +192,6 @@ export function mapGalleryItem(raw: RawGalleryItem): GalleryItem {
     imageUrl: raw.imageUrl,
     caption: raw.caption,
     programTag: raw.programTag,
+    isDemo: raw.isDemo === true,
   };
 }
