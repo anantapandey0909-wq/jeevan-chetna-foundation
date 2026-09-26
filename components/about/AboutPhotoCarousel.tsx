@@ -13,6 +13,30 @@ type Slide = {
 /** Real Foundation / owner-supplied photographs only — no stock or generated images. */
 const SLIDES: Slide[] = [
   {
+    src: '/images/foundation/foundation-certificate-ceremony-01.jpg',
+    alt: 'Jeevan Chetna Foundation certificate ceremony with team and participants',
+    caption: 'Certificate distribution ceremony with Foundation leadership, team members, and participants.',
+    tag: 'Certificate ceremony',
+  },
+  {
+    src: '/images/activities/plantation/plantation-group-outdoor-01.jpg',
+    alt: 'Tree plantation activity with Foundation volunteers outdoors',
+    caption: 'Foundation team and volunteers during an outdoor tree plantation drive.',
+    tag: 'Plantation drive',
+  },
+  {
+    src: '/images/activities/plantation/plantation-pink-building-01.jpg',
+    alt: 'Community plantation activity near local building with Foundation members',
+    caption: 'Plantation and greening activity with Foundation members and local participants.',
+    tag: 'Community plantation',
+  },
+  {
+    src: '/images/foundation/foundation-riverside-group-01.jpg',
+    alt: 'Jeevan Chetna Foundation team group photograph by the riverside',
+    caption: 'Foundation team and volunteers gathered by the riverside during field outreach.',
+    tag: 'Team outing',
+  },
+  {
     src: '/images/foundation/foundation-group-01.jpg',
     alt: 'Jeevan Chetna Foundation team and participants group photograph',
     caption: 'Foundation team members and participants at a Jeevan Chetna Foundation gathering.',
