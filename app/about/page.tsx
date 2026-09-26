@@ -16,6 +16,7 @@ import {
   Compass
 } from 'lucide-react';
 import { NGO_INFO } from '@/lib/data/ngo-info';
+import { AboutPhotoCarousel } from '@/components/about/AboutPhotoCarousel';
 
 export const metadata = {
   title: 'About Us | Jeevan Chetna Foundation',
@@ -40,19 +41,49 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Foundation group photograph (owner-supplied) */}
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-subtle overflow-hidden">
-          <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] bg-slate-100">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/foundation/foundation-group-01.jpg"
-              alt="Group photograph of participants under a Jeevan Chetna Foundation banner"
-              className="w-full h-full object-cover object-center"
-            />
+        {/* Sliding team, community & program photographs (real Foundation / owner photos) */}
+        <AboutPhotoCarousel />
+
+        {/* Leadership & team photographs (owner-supplied) */}
+        <div className="space-y-5">
+          <div className="text-center space-y-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+              Leadership & Team
+            </h2>
+            <p className="text-sm text-slate-500 max-w-xl mx-auto">
+              Photographs of Foundation leadership shared for this portal.
+            </p>
           </div>
-          <p className="px-4 py-2.5 text-[11px] text-slate-500 border-t border-slate-100">
-            Participants photographed at a Jeevan Chetna Foundation gathering.
-          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-subtle overflow-hidden">
+              <div className="relative aspect-[4/5] bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/foundation/team/praveen-sir.jpg"
+                  alt="Mr. Parvin Pandey, Co-founder of Jeevan Chetna Foundation"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div className="px-4 py-3 border-t border-slate-100">
+                <p className="font-bold text-sm text-slate-900">Mr. Parvin Pandey</p>
+                <p className="text-xs text-forest-700 font-medium mt-0.5">Co-founder</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-3xl border border-slate-200 shadow-subtle overflow-hidden">
+              <div className="relative aspect-[4/5] bg-slate-100">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/images/foundation/team/kamal-sir.jpg"
+                  alt="Mr. Kamal, Coordinator at Jeevan Chetna Foundation"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <div className="px-4 py-3 border-t border-slate-100">
+                <p className="font-bold text-sm text-slate-900">Mr. Kamal</p>
+                <p className="text-xs text-forest-700 font-medium mt-0.5">Coordinator</p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Official Identity & Legal Standing Card */}
