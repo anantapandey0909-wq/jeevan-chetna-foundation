@@ -23,9 +23,10 @@ export async function POST(req: NextRequest) {
       where: { email: email.toLowerCase() },
     });
 
+    // Use a single generic message to avoid revealing whether the email exists.
     if (!admin) {
       return NextResponse.json(
-        { error: 'Invalid credentials. User does not exist.' },
+        { error: 'Invalid credentials.' },
         { status: 401 }
       );
     }
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
 
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: 'Invalid credentials. Incorrect password.' },
+        { error: 'Invalid credentials.' },
         { status: 401 }
       );
     }
@@ -70,7 +71,14 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (error) {
-    console.error('Login error:', error);
+    // Structured log for Vercel Runtime Logs (do not leak details to the client)
+    const err = error as Error & { code?: string; clientVersion?: string; name?: string };
+    console.error('Login error:', {
+      name: err?.name,
+      message: err?.message,
+      code: err?.code,
+      clientVersion: err?.clientVersion,
+    });
     return NextResponse.json(
       { error: 'Internal server error occurred during authentication.' },
       { status: 500 }
