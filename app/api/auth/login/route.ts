@@ -4,6 +4,31 @@ import { prisma } from '@/lib/prisma';
 import { signToken, SESSION_COOKIE_NAME } from '@/lib/auth';
 import { loginSchema } from '@/lib/validations';
 
+function classifyAuthError(error: unknown): string {
+  const msg = String((error as Error)?.message ?? error ?? '').toLowerCase();
+  const name = String((error as Error)?.name ?? '');
+
+  if (msg.includes('query engine') || msg.includes('libquery_engine') || msg.includes('rhel-openssl')) {
+    return 'ENGINE_NOT_FOUND';
+  }
+  if (msg.includes("can't reach database") || msg.includes('p1001') || msg.includes('connect econnrefused')) {
+    return 'DB_UNREACHABLE';
+  }
+  if (msg.includes('p1013') || msg.includes('invalid') && msg.includes('url') || msg.includes('the url must start')) {
+    return 'BAD_DATABASE_URL';
+  }
+  if (msg.includes('jwt_secret') || name.includes('JWT')) {
+    return 'JWT_SECRET';
+  }
+  if (msg.includes('does not exist') && msg.includes('table')) {
+    return 'TABLE_MISSING';
+  }
+  if (name.includes('PrismaClientInitializationError')) {
+    return 'PRISMA_INIT';
+  }
+  return 'UNKNOWN';
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -18,12 +43,10 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = parseResult.data;
 
-    // Find admin user in database
     const admin = await prisma.adminUser.findUnique({
       where: { email: email.toLowerCase() },
     });
 
-    // Use a single generic message to avoid revealing whether the email exists.
     if (!admin) {
       return NextResponse.json(
         { error: 'Invalid credentials.' },
@@ -40,7 +63,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sign JWT session token
     const token = await signToken({
       userId: admin.id,
       email: admin.email,
@@ -58,29 +80,35 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Set HTTP-only secure session cookie
     response.cookies.set({
       name: SESSION_COOKIE_NAME,
       value: token,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: '/',
     });
 
     return response;
   } catch (error) {
-    // Structured log for Vercel Runtime Logs (do not leak details to the client)
-    const err = error as Error & { code?: string; clientVersion?: string; name?: string };
+    const err = error as Error & { code?: string; clientVersion?: string };
+    const diag = classifyAuthError(error);
     console.error('Login error:', {
+      diag,
       name: err?.name,
       message: err?.message,
       code: err?.code,
       clientVersion: err?.clientVersion,
+      hasDatabaseUrl: Boolean(process.env.DATABASE_URL),
+      hasJwtSecret: Boolean(process.env.JWT_SECRET && process.env.JWT_SECRET.length >= 16),
     });
+    // diag helps identify infrastructure issues without leaking secrets
     return NextResponse.json(
-      { error: 'Internal server error occurred during authentication.' },
+      {
+        error: 'Internal server error occurred during authentication.',
+        diag,
+      },
       { status: 500 }
     );
   }
